@@ -1,6 +1,8 @@
+# app.py (minimal proxy: only "/" -> n8n, and "/alive/")
 import os
-from flask import Flask, request, Response, stream_with_context, redirect
+from flask import Flask, request, Response
 import requests
+from flask import stream_with_context
 
 app = Flask(__name__)
 
@@ -12,15 +14,14 @@ N8N_BASE = f"http://{N8N_HOST}:{N8N_PORT}"
 def alive():
     return ("OK", 200)
 
-@app.route("/", methods=["GET"])
-def root():
-    return redirect("/n8n/")
+# only proxy the root path "/" (all methods)
+@app.route("/", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
+def proxy_root():
+    target_url = f"{N8N_BASE}/"
 
-@app.route("/n8n/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
-@app.route("/n8n/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
-def proxy(path):
-    target_url = f"{N8N_BASE}/{path}"
+    # forward headers (strip host)
     headers = {k: v for k, v in request.headers if k.lower() != "host"}
+
     try:
         resp = requests.request(
             method=request.method,
@@ -31,7 +32,7 @@ def proxy(path):
             cookies=request.cookies,
             allow_redirects=False,
             stream=True,
-            timeout=30,
+            timeout=60,
         )
     except requests.exceptions.RequestException as e:
         return (f"Upstream request failed: {e}", 502)
@@ -41,15 +42,6 @@ def proxy(path):
 
     return Response(stream_with_context(resp.iter_content(chunk_size=8192)), status=resp.status_code, headers=response_headers)
 
-@app.route("/status/", methods=["GET"])
-def status():
-    try:
-        r = requests.get(f"{N8N_BASE}/healthz", timeout=3)
-        if r.status_code == 200:
-            return ("n8n OK", 200)
-    except Exception:
-        pass
-    return ("n8n not reachable", 502)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))

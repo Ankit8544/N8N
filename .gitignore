@@ -1,0 +1,74 @@
+# ---------------------------
+# Python-related
+# ---------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# dotenv files (VERY important)
+.env
+.env.*
+!env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# ---------------------------
+# Node / n8n-related
+# ---------------------------
+node_modules/
+dist/
+.tmp/
+.n8n/
+.n8n_backup/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---------------------------
+# Docker
+# ---------------------------
+# Ignore Docker build cache folders
+docker-cache/
+docker-compose.override.yml
+
+# ---------------------------
+# Render deployment
+# ---------------------------
+# Render secret files
+/etc/secrets/
+secrets/
+secret/
+*.secret
+
+# ---------------------------
+# IDE settings
+# ---------------------------
+.vscode/
+.idea/
+*.iml
+
+# ---------------------------
+# Misc
+# ---------------------------
+*.sqlite
+*.db
+*.pid
+*.tar
+*.gz
+*.zip
+*.bak
+*.swp

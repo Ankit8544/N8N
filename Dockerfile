@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y python3 python3-pip curl && \
 
 WORKDIR /usr/src/app
 
+# Python deps for the Flask proxy
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 
@@ -14,9 +15,8 @@ COPY app.py ./
 COPY start.sh ./
 RUN chmod +x start.sh
 
-# Create directory used for persistent user folder (can be mounted to /data on Render)
-RUN mkdir -p /data/.n8n && chown -R node:node /data
-
+# Expose n8n internal port for local debugging (not required on Render)
 EXPOSE 5678
 
+# Run wrapper which launches n8n and the Flask proxy
 CMD ["/usr/src/app/start.sh"]
