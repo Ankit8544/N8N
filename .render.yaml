@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: n8n-flask-proxy
+    env: docker
+    repo: https://github.com/Ankit8544/N8N.git
+    branch: main
+    plan: free
+    disk: 10 # set at least 1GB; choose size available on Render free plan limits
+    disk_mount_path: /data
+    buildCommand: ""
+    startCommand: ""
+    envVars:
+      - key: N8N_HOST
+        value: "127.0.0.1"
+      - key: N8N_PORT
+        value: "5678"
+      - key: N8N_USER_FOLDER
+        value: "/data/.n8n"
